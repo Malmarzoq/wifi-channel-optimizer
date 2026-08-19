@@ -51,7 +51,11 @@ ssh-keyscan -H <router-ip> >> ~/.ssh/known_hosts
 
 ## Run
 
-### Manual run
+Choose one mode at a time. See [run modes](docs/RUN_MODES.md) for the complete start, stop, and switching instructions.
+
+### Path 1: Run manually
+
+Choose this for testing or demonstrations. It stops when you press `Ctrl+C`, close the terminal, or restart the computer.
 
 From the project directory, run:
 
@@ -62,23 +66,45 @@ cd wifi-channel-optimizer
 
 To stop a manual run, press `Ctrl+C` in the same terminal.
 
+If you previously enabled the automatic service, disable it before using manual mode.
+
 > Do not start a manual run while the systemd service is active. That would create two agents that can make competing channel decisions. If the service is active, follow its output with `journalctl -u wifi-channel-optimizer.service -f` instead.
 
-### Run automatically after restart
+### Path 2: Run automatically after every restart
 
-Follow the [systemd guide](docs/SYSTEMD.md) to run the agent automatically after a reboot.
-
-For a prepared local setup, install and start the service with:
+Choose this for normal unattended operation. Install and start the service once:
 
 ```bash
 ./scripts/install-systemd-service.sh
 ```
+
+The service starts now and starts again automatically after every reboot.
 
 To stop and disable that service later:
 
 ```bash
 sudo systemctl disable --now wifi-channel-optimizer.service
 ```
+
+This stops it now and prevents automatic startup after future reboots. To turn automatic operation back on and start it immediately:
+
+```bash
+sudo systemctl enable --now wifi-channel-optimizer.service
+```
+
+Check its status with:
+
+```bash
+systemctl status wifi-channel-optimizer.service
+```
+
+Watch its live output without starting another agent:
+
+```bash
+journalctl -u wifi-channel-optimizer.service -f
+```
+
+See the [systemd guide](docs/SYSTEMD.md) for the service template and advanced setup.
 
 ## Security
 
