@@ -11,6 +11,11 @@ An autonomous Python agent that scans 2.4 GHz Wi-Fi interference and selects a b
 - Switches channels only when the predicted improvement is significant.
 - Verifies transmission retries and rolls back after degradation.
 
+## Documentation
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Run as a systemd service](docs/SYSTEMD.md)
+
 ## Requirements
 
 - Python 3.9 or later
@@ -38,10 +43,10 @@ WIFI_IFACE=eth6
 SSH_KNOWN_HOSTS=
 ```
 
-Before running the agent, verify the router's SSH fingerprint and add it to `known_hosts`:
+Obtain the router's SSH fingerprint through a trusted channel. Only after comparing it should you add the key to `known_hosts`:
 
 ```bash
-ssh-keyscan -H 192.168.1.1 >> ~/.ssh/known_hosts
+ssh-keyscan -H <router-ip> >> ~/.ssh/known_hosts
 ```
 
 ## Run
