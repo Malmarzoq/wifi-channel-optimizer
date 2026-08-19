@@ -36,11 +36,11 @@ DRY_RUN = os.getenv("DRY_RUN", "true").strip().lower() in {"1", "true", "yes", "
 LOG_FILE = os.path.join(str(BASE_DIR), "wifi_agent.log")
 STATE_FILE = Path(os.getenv("STATE_FILE", str(BASE_DIR / ".wifi_agent_state.json")))
 
-# محددات التشغيل والأمان
-CHECK_INTERVAL_SECONDS = 900  # دورة الفحص كل 15 دقيقة
-COOLDOWN_MINUTES = 60         # فترة أمان لمنع التبديل المتكرر
-VERIFICATION_DELAY = 60       # زمن مراقبة الاستقرار بعد التبديل (بالثواني)
-TX_RETRIES_ABORT_THRESHOLD = 500  # عتبة التراجع في حال حدوث أخطاء إرسال حادة
+# إعدادات التشغيل والحماية
+CHECK_INTERVAL_SECONDS = 900      # الفاصل الزمني بين الفحوصات (15 دقيقة)
+COOLDOWN_MINUTES = 60            # فترة التهدئة لمنع تكرار التبديل
+VERIFICATION_DELAY = 60          # مهلة التحقق من الاستقرار بعد التبديل (بالثواني)
+TX_RETRIES_ABORT_THRESHOLD = 500  # سقف تكرار محاولة إرسال الحزم غير المستلمة قبل إلغاء العملية
 
 ALL_CHANNELS = list(range(1, 14))
 OVERLAP_WEIGHTS = {0: 1.0, 1: 0.8, 2: 0.6, 3: 0.3, 4: 0.1}
