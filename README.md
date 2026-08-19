@@ -55,3 +55,5 @@ python main.py
 - `.env`, log files, and `config/secrets.py` are ignored by Git.
 - SSH host keys are verified; unknown hosts are rejected.
 - Use a dedicated router account with only the permissions this agent needs.
+
+## License
