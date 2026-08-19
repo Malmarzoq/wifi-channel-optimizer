@@ -17,6 +17,16 @@ chmod 600 .env
 
 Add the router host key to the service user's `known_hosts` file, or set `SSH_KNOWN_HOSTS` in `.env` to a dedicated file that the service user can read. Verify the fingerprint through a trusted channel before accepting it.
 
+## Fast installation
+
+This repository includes a reusable [unit-file template](../deploy/wifi-channel-optimizer.service.template) and an installation script. From the project directory, run the script as the account that owns the checkout (do not prefix it with `sudo`):
+
+```bash
+./scripts/install-systemd-service.sh
+```
+
+It detects the project directory and your user name, asks for `sudo` only to install the unit file, enables the service, and starts it. It reads router settings from the local `.env` file; credentials are never placed in the systemd unit.
+
 ## Create the unit file
 
 Create `/etc/systemd/system/wifi-channel-optimizer.service` with the following content, replacing both placeholders:

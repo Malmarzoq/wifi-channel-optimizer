@@ -68,6 +68,12 @@ To stop a manual run, press `Ctrl+C` in the same terminal.
 
 Follow the [systemd guide](docs/SYSTEMD.md) to run the agent automatically after a reboot.
 
+For a prepared local setup, install and start the service with:
+
+```bash
+./scripts/install-systemd-service.sh
+```
+
 To stop and disable that service later:
 
 ```bash

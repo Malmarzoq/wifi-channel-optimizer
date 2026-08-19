@@ -1,0 +1,16 @@
+[Unit]
+Description=Wi-Fi Channel Optimizer
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User={{SERVICE_USER}}
+WorkingDirectory={{PROJECT_DIR}}
+Environment=PYTHONUNBUFFERED=1
+ExecStart={{PROJECT_DIR}}/.venv/bin/python {{PROJECT_DIR}}/main.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
