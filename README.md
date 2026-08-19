@@ -15,6 +15,7 @@ An autonomous Python agent that scans 2.4 GHz Wi-Fi interference and selects a b
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Run as a systemd service](docs/SYSTEMD.md)
+- [Router compatibility](docs/ROUTER_COMPATIBILITY.md)
 
 ## Requirements
 
@@ -39,6 +40,8 @@ Set your local router credentials in `.env`; never commit this file.
 ROUTER_IP=192.168.1.1
 ROUTER_USER=your_router_username
 ROUTER_PASS=your_router_password
+SSH_PORT=22
+# `eth6` is an example from a tested ASUS configuration; verify yours first.
 WIFI_IFACE=eth6
 SSH_KNOWN_HOSTS=
 ```
@@ -46,7 +49,7 @@ SSH_KNOWN_HOSTS=
 Obtain the router's SSH fingerprint through a trusted channel. Only after comparing it should you add the key to `known_hosts`:
 
 ```bash
-ssh-keyscan -H <router-ip> >> ~/.ssh/known_hosts
+ssh-keyscan -p <ssh-port> -H <router-ip> >> ~/.ssh/known_hosts
 ```
 
 ## Run

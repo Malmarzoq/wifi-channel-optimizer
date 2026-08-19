@@ -45,6 +45,7 @@ The principal settings are:
 | `ROUTER_IP` | Router address on the local network. |
 | `ROUTER_USER` / `ROUTER_PASS` | Dedicated router credentials used for SSH. |
 | `WIFI_IFACE` | Router interface to manage. |
+| `SSH_PORT` | SSH service port; defaults to `22`. |
 | `SSH_KNOWN_HOSTS` | Optional path to a dedicated trusted-hosts file. |
 | `CHECK_INTERVAL_SECONDS` | Delay between evaluation cycles. |
 | `COOLDOWN_MINUTES` | Minimum interval between successful channel changes. |

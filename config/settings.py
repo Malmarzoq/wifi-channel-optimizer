@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 # رقم الإصدار
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = BASE_DIR / ".env"
@@ -21,6 +21,12 @@ ROUTER_IP = os.getenv("ROUTER_IP", "192.168.1.1")
 USERNAME = os.getenv("ROUTER_USER", "admin")
 PASSWORD = os.getenv("ROUTER_PASS", "YOUR_ROUTER_PASSWORD_HERE")
 WIFI_IFACE = os.getenv("WIFI_IFACE", "eth6")
+try:
+    SSH_PORT = int(os.getenv("SSH_PORT", "22"))
+except ValueError as exc:
+    raise ValueError("SSH_PORT must be a number between 1 and 65535.") from exc
+if not 1 <= SSH_PORT <= 65535:
+    raise ValueError("SSH_PORT must be a number between 1 and 65535.")
 # Optional path to a dedicated known_hosts file; system known_hosts is used when empty.
 SSH_KNOWN_HOSTS = os.getenv("SSH_KNOWN_HOSTS", "")
 NVRAM_RADIO = os.getenv("NVRAM_RADIO", "wl0")

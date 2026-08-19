@@ -3,7 +3,7 @@ import re
 import time
 import paramiko
 from config.settings import (
-    ROUTER_IP, USERNAME, PASSWORD, WIFI_IFACE, SSH_KNOWN_HOSTS, NVRAM_RADIO,
+    ROUTER_IP, USERNAME, PASSWORD, WIFI_IFACE, SSH_PORT, SSH_KNOWN_HOSTS, NVRAM_RADIO,
     ALL_CHANNELS, OVERLAP_WEIGHTS,
 )
 
@@ -22,7 +22,7 @@ class RouterTools:
             if SSH_KNOWN_HOSTS:
                 ssh.load_host_keys(SSH_KNOWN_HOSTS)
             ssh.set_missing_host_key_policy(paramiko.RejectPolicy())
-            ssh.connect(ROUTER_IP, username=USERNAME, password=PASSWORD, timeout=timeout)
+            ssh.connect(ROUTER_IP, port=SSH_PORT, username=USERNAME, password=PASSWORD, timeout=timeout)
             _, stdout, _stderr = ssh.exec_command(command)
             return stdout.read().decode().strip()
         except paramiko.BadHostKeyException:
