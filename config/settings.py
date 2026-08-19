@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 # رقم الإصدار
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = BASE_DIR / ".env"
@@ -23,9 +23,12 @@ PASSWORD = os.getenv("ROUTER_PASS", "YOUR_ROUTER_PASSWORD_HERE")
 WIFI_IFACE = os.getenv("WIFI_IFACE", "eth6")
 # Optional path to a dedicated known_hosts file; system known_hosts is used when empty.
 SSH_KNOWN_HOSTS = os.getenv("SSH_KNOWN_HOSTS", "")
+NVRAM_RADIO = os.getenv("NVRAM_RADIO", "wl0")
+DRY_RUN = os.getenv("DRY_RUN", "true").strip().lower() in {"1", "true", "yes", "on"}
 
 # مسارات وسجلات
 LOG_FILE = os.path.join(str(BASE_DIR), "wifi_agent.log")
+STATE_FILE = Path(os.getenv("STATE_FILE", str(BASE_DIR / ".wifi_agent_state.json")))
 
 # محددات التشغيل والأمان
 CHECK_INTERVAL_SECONDS = 900  # دورة الفحص كل 15 دقيقة

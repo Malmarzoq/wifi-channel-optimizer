@@ -1,28 +1,40 @@
+import logging
 import re
 import time
 import paramiko
 from config.settings import (
-    ROUTER_IP, USERNAME, PASSWORD, WIFI_IFACE, SSH_KNOWN_HOSTS, ALL_CHANNELS, OVERLAP_WEIGHTS
+    ROUTER_IP, USERNAME, PASSWORD, WIFI_IFACE, SSH_KNOWN_HOSTS, NVRAM_RADIO,
+    ALL_CHANNELS, OVERLAP_WEIGHTS,
 )
 
+logger = logging.getLogger(__name__)
+
 class RouterTools:
+
     """أدوات التحكم والاستعلام المباشر من الراوتر"""
 
     @staticmethod
     def execute_ssh(command, timeout=15):
-        ssh = paramiko.SSHClient()
-        ssh.load_system_host_keys()
-        if SSH_KNOWN_HOSTS:
-            ssh.load_host_keys(SSH_KNOWN_HOSTS)
-        ssh.set_missing_host_key_policy(paramiko.RejectPolicy())
+        ssh = None
         try:
+            ssh = paramiko.SSHClient()
+            ssh.load_system_host_keys()
+            if SSH_KNOWN_HOSTS:
+                ssh.load_host_keys(SSH_KNOWN_HOSTS)
+            ssh.set_missing_host_key_policy(paramiko.RejectPolicy())
             ssh.connect(ROUTER_IP, username=USERNAME, password=PASSWORD, timeout=timeout)
-            _, stdout, stderr = ssh.exec_command(command)
-            output = stdout.read().decode().strip()
-            ssh.close()
-            return output
-        except Exception:
-            return None
+            _, stdout, _stderr = ssh.exec_command(command)
+            return stdout.read().decode().strip()
+        except paramiko.BadHostKeyException:
+            logger.error("SSH host-key verification failed for router %s.", ROUTER_IP)
+        except paramiko.AuthenticationException:
+            logger.error("SSH authentication failed for router %s.", ROUTER_IP)
+        except (paramiko.SSHException, OSError) as exc:
+            logger.warning("SSH communication failed for router %s: %s", ROUTER_IP, exc)
+        finally:
+            if ssh is not None:
+                ssh.close()
+        return None
 
     @classmethod
     def get_current_channel(cls):
@@ -83,11 +95,11 @@ class RouterTools:
         time.sleep(3)
 
         if cls.get_current_channel() == channel:
-            cls.execute_ssh(f"nvram set wl0_channel={channel} && nvram set wl0_chanspec={channel} && nvram commit")
+            cls.execute_ssh(f"nvram set {NVRAM_RADIO}_channel={channel} && nvram set {NVRAM_RADIO}_chanspec={channel} && nvram commit")
             return True
 
         # المحاولة الاحتياطية
-        cmd_service = f"nvram set wl0_channel={channel} && nvram set wl0_chanspec={channel} && nvram commit && service restart_wireless"
+        cmd_service = f"nvram set {NVRAM_RADIO}_channel={channel} && nvram set {NVRAM_RADIO}_chanspec={channel} && nvram commit && service restart_wireless"
         cls.execute_ssh(cmd_service)
         time.sleep(8)
         return cls.get_current_channel() == channel

@@ -5,6 +5,7 @@ config/secrets.py
 
 # السجلات وملفات الكاش
 *.log
+.wifi_agent_state.json
 __pycache__/
 *.pyc
 

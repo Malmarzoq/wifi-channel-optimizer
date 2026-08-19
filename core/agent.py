@@ -1,31 +1,33 @@
 import time
-from datetime import datetime
 from config.settings import (
-    ALL_CHANNELS, COOLDOWN_MINUTES, VERIFICATION_DELAY, TX_RETRIES_ABORT_THRESHOLD
+    ALL_CHANNELS, COOLDOWN_MINUTES, DRY_RUN, STATE_FILE, VERIFICATION_DELAY,
+    TX_RETRIES_ABORT_THRESHOLD,
 )
 from tools.router_tools import RouterTools
 from memory.state_memory import AgentMemory
 
 class WifiAgentHarness:
-    def __init__(self, logger):
+    def __init__(self, logger, memory=None, router_tools=RouterTools, sleep_fn=time.sleep):
         self.log = logger
-        self.memory = AgentMemory()
+        self.router = router_tools
+        self.sleep_fn = sleep_fn
+        self.memory = memory or AgentMemory(state_file=STATE_FILE)
 
     def evaluate_and_act(self):
-        current_ch = RouterTools.get_current_channel()
+        current_ch = self.router.get_current_channel()
         if current_ch is None:
             self.log("⚠️ تعذر الاتصال بالراوتر أو قراءة القناة الحالية.")
             return
 
-        stats = RouterTools.scan_spectrum()
+        stats = self.router.scan_spectrum()
 
         # 1. حساب مستوى التداخل لجميع القنوات من 1 إلى 13 بالكامل
-        scores = {ch: RouterTools.calculate_interference(stats, ch) for ch in ALL_CHANNELS}
+        scores = {ch: self.router.calculate_interference(stats, ch) for ch in ALL_CHANNELS}
         
         # 2. تحديد القناة الأقل تداخلاً
         best_ch = min(scores, key=scores.get)
 
-        score_curr = scores.get(current_ch, RouterTools.calculate_interference(stats, current_ch))
+        score_curr = scores.get(current_ch, self.router.calculate_interference(stats, current_ch))
         score_best = scores[best_ch]
 
         # 3. صياغة التقرير الشامل لجميع القنوات (1 إلى 13)
@@ -47,8 +49,13 @@ class WifiAgentHarness:
             improvement_pct = int((1 - score_best / score_curr) * 100)
             self.log(f"🎯 تقرر التبديل إلى Channel {best_ch} بنسبة تحسن متوقعة: {improvement_pct}%")
 
-            counters_before = RouterTools.get_interface_counters()
-            success = RouterTools.apply_channel(best_ch)
+            if DRY_RUN:
+                self.log(f"🧪 Dry run: would switch from Channel {current_ch} to Channel {best_ch}.")
+                self.memory.record_decision(current_ch, best_ch, "Dry run: no channel change applied", False)
+                return
+
+            counters_before = self.router.get_interface_counters()
+            success = self.router.apply_channel(best_ch)
 
             if not success:
                 self.log(f"❌ فشل تطبيق القناة الجديدة {best_ch}.")
@@ -57,15 +64,15 @@ class WifiAgentHarness:
 
             # حلقة التحقق اللاحق (Closed-Loop Verification)
             self.log(f"⏱️ فحص استقرار التردد الجديد لمدة {VERIFICATION_DELAY} ثانية...")
-            time.sleep(VERIFICATION_DELAY)
+            self.sleep_fn(VERIFICATION_DELAY)
 
-            counters_after = RouterTools.get_interface_counters()
+            counters_after = self.router.get_interface_counters()
             delta_retries = counters_after["txretries"] - counters_before["txretries"]
 
             # التراجع التلقائي في حال رصد أخطاء إرسال مرتفعة
             if delta_retries > TX_RETRIES_ABORT_THRESHOLD:
                 self.log(f"🚨 تدهور مفاجئ في الأداء (Retries: +{delta_retries})! جاري التراجع التلقائي (Rollback) إلى Channel {current_ch}...")
-                RouterTools.apply_channel(current_ch)
+                self.router.apply_channel(current_ch)
                 self.memory.record_decision(best_ch, current_ch, "Rollback: High Packet Retries", True, delta_retries)
                 return
 

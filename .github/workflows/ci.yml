@@ -32,3 +32,5 @@ jobs:
       - name: Validate Python code
         run: |
           python -m compileall -q .
+          python -c "from core.agent import WifiAgentHarness; from tools.router_tools import RouterTools; assert WifiAgentHarness and RouterTools"
+          python -m unittest discover -v
