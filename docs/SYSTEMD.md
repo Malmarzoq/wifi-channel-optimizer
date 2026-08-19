@@ -60,6 +60,12 @@ To stop it later:
 sudo systemctl disable --now wifi-channel-optimizer.service
 ```
 
+## Avoid duplicate agents
+
+Do not run `main.py` manually while `wifi-channel-optimizer.service` is active. Two agents can read the same router state and make competing channel decisions.
+
+Use `journalctl -u wifi-channel-optimizer.service -f` to watch the active service instead.
+
 ## Updating safely
 
 1. Stop the service.

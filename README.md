@@ -62,6 +62,8 @@ cd wifi-channel-optimizer
 
 To stop a manual run, press `Ctrl+C` in the same terminal.
 
+> Do not start a manual run while the systemd service is active. That would create two agents that can make competing channel decisions. If the service is active, follow its output with `journalctl -u wifi-channel-optimizer.service -f` instead.
+
 ### Run automatically after restart
 
 Follow the [systemd guide](docs/SYSTEMD.md) to run the agent automatically after a reboot.
