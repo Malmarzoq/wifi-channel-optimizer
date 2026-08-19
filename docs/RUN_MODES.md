@@ -14,7 +14,20 @@ Start it from the project directory:
 
 The terminal displays the agent output. Stop it with `Ctrl+C` in that same terminal.
 
+From another terminal, follow its live log:
+
+```bash
+tail -f wifi_agent.log
+```
+
+`Ctrl+C` stops this log display only; it does not stop the agent. To confirm that a manual agent is running:
+
+```bash
+pgrep -af 'python.*main.py'
+```
+
 Manual mode does not survive closing the terminal or restarting the computer. If the automatic service was previously enabled, stop and disable it before starting manual mode:
+
 
 ```bash
 sudo systemctl disable --now wifi-channel-optimizer.service

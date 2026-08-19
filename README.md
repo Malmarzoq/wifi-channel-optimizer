@@ -66,7 +66,20 @@ cd wifi-channel-optimizer
 
 To stop a manual run, press `Ctrl+C` in the same terminal.
 
+From another terminal, watch the manual agent's live log with:
+
+```bash
+tail -f wifi_agent.log
+```
+
+This follows the log only; `Ctrl+C` stops the display, not the agent. To check whether a manual agent is running:
+
+```bash
+pgrep -af 'python.*main.py'
+```
+
 If you previously enabled the automatic service, disable it before using manual mode.
+
 
 > Do not start a manual run while the systemd service is active. That would create two agents that can make competing channel decisions. If the service is active, follow its output with `journalctl -u wifi-channel-optimizer.service -f` instead.
 
