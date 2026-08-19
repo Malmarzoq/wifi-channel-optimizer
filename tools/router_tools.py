@@ -2,7 +2,7 @@ import re
 import time
 import paramiko
 from config.settings import (
-    ROUTER_IP, USERNAME, PASSWORD, WIFI_IFACE, ALL_CHANNELS, OVERLAP_WEIGHTS
+    ROUTER_IP, USERNAME, PASSWORD, WIFI_IFACE, SSH_KNOWN_HOSTS, ALL_CHANNELS, OVERLAP_WEIGHTS
 )
 
 class RouterTools:
@@ -11,7 +11,10 @@ class RouterTools:
     @staticmethod
     def execute_ssh(command, timeout=15):
         ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.load_system_host_keys()
+        if SSH_KNOWN_HOSTS:
+            ssh.load_host_keys(SSH_KNOWN_HOSTS)
+        ssh.set_missing_host_key_policy(paramiko.RejectPolicy())
         try:
             ssh.connect(ROUTER_IP, username=USERNAME, password=PASSWORD, timeout=timeout)
             _, stdout, stderr = ssh.exec_command(command)

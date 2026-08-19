@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 # رقم الإصدار
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = BASE_DIR / ".env"
@@ -21,6 +21,8 @@ ROUTER_IP = os.getenv("ROUTER_IP", "192.168.1.1")
 USERNAME = os.getenv("ROUTER_USER", "admin")
 PASSWORD = os.getenv("ROUTER_PASS", "YOUR_ROUTER_PASSWORD_HERE")
 WIFI_IFACE = os.getenv("WIFI_IFACE", "eth6")
+# Optional path to a dedicated known_hosts file; system known_hosts is used when empty.
+SSH_KNOWN_HOSTS = os.getenv("SSH_KNOWN_HOSTS", "")
 
 # مسارات وسجلات
 LOG_FILE = os.path.join(str(BASE_DIR), "wifi_agent.log")

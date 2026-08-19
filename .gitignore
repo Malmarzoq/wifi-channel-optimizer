@@ -10,3 +10,4 @@ __pycache__/
 
 # مستندات وملاحظات محلية
 *.txt
+!requirements.txt
