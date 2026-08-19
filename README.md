@@ -51,8 +51,25 @@ ssh-keyscan -H <router-ip> >> ~/.ssh/known_hosts
 
 ## Run
 
+### Manual run
+
+From the project directory, run:
+
 ```bash
-python main.py
+cd wifi-channel-optimizer
+.venv/bin/python main.py
+```
+
+To stop a manual run, press `Ctrl+C` in the same terminal.
+
+### Run automatically after restart
+
+Follow the [systemd guide](docs/SYSTEMD.md) to run the agent automatically after a reboot.
+
+To stop and disable that service later:
+
+```bash
+sudo systemctl disable --now wifi-channel-optimizer.service
 ```
 
 ## Security
